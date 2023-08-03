@@ -1,21 +1,12 @@
-// server.js (Server-side)
-
 const express = require('express');
+const router = express.Router();
 const fs = require('fs');
 const path = require('path');
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.use(cors());
-
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 
 const dbFilePath = path.join(__dirname, 'db.json');
 
 // Endpoint to get all notes
-app.get('/api/notes', (req, res) => {
+router.get('/api/notes', (req, res) => {
   fs.readFile(dbFilePath, 'utf8', (err, data) => {
     if (err) {
       console.error(err);
@@ -28,7 +19,7 @@ app.get('/api/notes', (req, res) => {
 });
 
 // Endpoint to save a new note
-app.post('/api/notes', (req, res) => {
+router.post('/api/notes', (req, res) => {
   const newNote = req.body;
 
   fs.readFile(dbFilePath, 'utf8', (err, data) => {
@@ -53,7 +44,7 @@ app.post('/api/notes', (req, res) => {
 });
 
 // Endpoint to delete a note by ID
-app.delete('/api/notes/:id', (req, res) => {
+router.delete('/api/notes/:id', (req, res) => {
   const noteId = req.params.id;
 
   fs.readFile(dbFilePath, 'utf8', (err, data) => {
@@ -76,18 +67,4 @@ app.delete('/api/notes/:id', (req, res) => {
   });
 });
 
-// Serve the notes.html file when /notes is requested
-app.get('/notes', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'notes.html'));
-});
-
-
-// Serve the index.html file
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
-});
-
+module.exports = router;
